@@ -1,6 +1,7 @@
 package task
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -30,11 +31,17 @@ func (t *TickTask) GetTickInterval() time.Duration {
 }
 
 func (t *TickTask) Start() (err error) {
-	t.Ticker = time.NewTicker(t.handler.(interface{ GetTickInterval() time.Duration }).GetTickInterval())
+	interval := t.handler.(interface{ GetTickInterval() time.Duration }).GetTickInterval()
+	if interval <= 0 {
+		return fmt.Errorf("tick interval must be greater than 0")
+	}
+	t.Ticker = time.NewTicker(interval)
 	t.SignalChan = t.Ticker.C
 	return
 }
 
 func (t *TickTask) Dispose() {
-	t.Ticker.Stop()
+	if t.Ticker != nil {
+		t.Ticker.Stop()
+	}
 }

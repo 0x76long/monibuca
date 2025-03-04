@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package pb;
+
+import "common.proto";
+
+option go_package = "m7s.live/v5/plugin/cluster/pb";
+
+// 流管理服务
+service StreamService {
+  // 注册流
+  rpc RegisterStream(RegisterStreamRequest) returns (RegisterStreamResponse);
+  
+  // 注销流
+  rpc UnregisterStream(UnregisterStreamRequest) returns (UnregisterStreamResponse);
+  
+  // 获取流信息
+  rpc GetStreamInfo(GetStreamInfoRequest) returns (GetStreamInfoResponse);
+  
+  // 获取集群流列表
+  rpc GetClusterStreams(GetClusterStreamsRequest) returns (GetClusterStreamsResponse);
+  
+  // 获取发布者最优节点
+  rpc GetOptimalNodeForPublisher(GetOptimalNodeForPublisherRequest) returns (GetOptimalNodeForPublisherResponse);
+  
+  // 获取订阅者最优节点
+  rpc GetOptimalNodeForSubscriber(GetOptimalNodeForSubscriberRequest) returns (GetOptimalNodeForSubscriberResponse);
+  
+  // 更新流状态
+  rpc UpdateStreamState(UpdateStreamStateRequest) returns (UpdateStreamStateResponse);
+}
+
+// 注册流请求
+message RegisterStreamRequest {
+  StreamInfo stream_info = 1;
+  string auth_token = 2;
+}
+
+// 注册流响应
+message RegisterStreamResponse {
+  bool success = 1;
+  string message = 2;
+  bool conflict_detected = 3;
+  StreamInfo resolved_stream = 4;  // 如果检测到冲突，返回解决后的流信息
+}
+
+// 注销流请求
+message UnregisterStreamRequest {
+  string stream_path = 1;
+  string node_id = 2;
+  string auth_token = 3;
+}
+
+// 注销流响应
+message UnregisterStreamResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// 获取流信息请求
+message GetStreamInfoRequest {
+  string stream_path = 1;
+}
+
+// 获取流信息响应
+message GetStreamInfoResponse {
+  bool success = 1;
+  string message = 2;
+  StreamInfo stream_info = 3;
+}
+
+// 获取集群流列表请求
+message GetClusterStreamsRequest {
+  string node_filter = 1;  // 可选，按节点筛选
+  string state_filter = 2;  // 可选，按状态筛选
+  string path_prefix = 3;   // 可选，按路径前缀筛选
+  int32 limit = 4;          // 可选，限制返回数量
+  int32 offset = 5;         // 可选，分页偏移
+}
+
+// 获取集群流列表响应
+message GetClusterStreamsResponse {
+  bool success = 1;
+  string message = 2;
+  repeated StreamInfo streams = 3;
+  int32 total_count = 4;    // 总数，用于分页
+}
+
+// 获取发布者最优节点请求
+message GetOptimalNodeForPublisherRequest {
+  string region = 1;        // 可选，首选区域
+  string codec = 2;         // 可选，编码信息
+  double estimated_bandwidth_mbps = 3;  // 可选，预估带宽
+}
+
+// 获取发布者最优节点响应
+message GetOptimalNodeForPublisherResponse {
+  bool success = 1;
+  string message = 2;
+  NodeInfo optimal_node = 3;
+  repeated NodeInfo fallback_nodes = 4;  // 备选节点
+}
+
+// 获取订阅者最优节点请求
+message GetOptimalNodeForSubscriberRequest {
+  string stream_path = 1;
+  string subscriber_ip = 2;  // 可选，订阅者 IP，用于地理位置优化
+  string region = 3;         // 可选，首选区域
+}
+
+// 获取订阅者最优节点响应
+message GetOptimalNodeForSubscriberResponse {
+  bool success = 1;
+  string message = 2;
+  NodeInfo optimal_node = 3;
+  repeated NodeInfo fallback_nodes = 4;  // 备选节点
+}
+
+// 更新流状态请求
+message UpdateStreamStateRequest {
+  string stream_path = 1;
+  string state = 2;
+  string auth_token = 3;
+}
+
+// 更新流状态响应
+message UpdateStreamStateResponse {
+  bool success = 1;
+  string message = 2;
+} 

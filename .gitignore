@@ -18,3 +18,6 @@ __debug*
 example/default/*
 !example/default/main.go
 !example/default/config.yaml
+shutdown.sh
+node_modules
+data

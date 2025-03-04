@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "m7s.live/v5/plugin/cluster/pb";
+
+import "common.proto";
+import "cluster.proto";
+import "node.proto";
+import "stream.proto";
+import "google/api/annotations.proto";
+
+// API 服务
+service Api {
+  // 集群管理接口
+  rpc GetClusterStatus(GetClusterStatusRequest) returns (GetClusterStatusResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/cluster/status"
+    };
+  }
+  rpc GetNodes(GetNodesRequest) returns (GetNodesResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/nodes"
+    };
+  }
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/health"
+    };
+  }
+  rpc UpdateNodeConfig(UpdateNodeConfigRequest) returns (UpdateNodeConfigResponse) {
+    option (google.api.http) = {
+      put: "/api/cluster/nodes/{node_id}/config"
+      body: "config"
+    };
+  }
+  rpc GetClusterMetrics(GetClusterMetricsRequest) returns (GetClusterMetricsResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/cluster/metrics"
+    };
+  }
+  rpc GetClusterConfig(GetClusterConfigRequest) returns (GetClusterConfigResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/cluster/config"
+    };
+  }
+  rpc UpdateClusterConfig(UpdateClusterConfigRequest) returns (UpdateClusterConfigResponse) {
+    option (google.api.http) = {
+      put: "/api/cluster/cluster/config"
+      body: "config"
+    };
+  }
+
+  // 节点管理接口
+  rpc SendHeartbeat(HeartbeatRequest) returns (HeartbeatResponse) {
+    option (google.api.http) = {
+      post: "/api/cluster/nodes/{node_id}/heartbeat"
+      body: "*"
+    };
+  }
+  rpc GetNodeInfo(GetNodeInfoRequest) returns (GetNodeInfoResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/nodes/{node_id}"
+    };
+  }
+
+  // 流管理接口
+  rpc RegisterStream(RegisterStreamRequest) returns (RegisterStreamResponse) {
+    option (google.api.http) = {
+      post: "/api/cluster/streams"
+      body: "stream_info"
+    };
+  }
+  rpc UnregisterStream(UnregisterStreamRequest) returns (UnregisterStreamResponse) {
+    option (google.api.http) = {
+      delete: "/api/cluster/streams/{stream_path}"
+    };
+  }
+  rpc GetStreamInfo(GetStreamInfoRequest) returns (GetStreamInfoResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/streams/{stream_path}"
+    };
+  }
+  rpc GetClusterStreams(GetClusterStreamsRequest) returns (GetClusterStreamsResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/streams"
+    };
+  }
+  rpc GetOptimalNodeForPublisher(GetOptimalNodeForPublisherRequest) returns (GetOptimalNodeForPublisherResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/nodes/optimal/publisher"
+    };
+  }
+  rpc GetOptimalNodeForSubscriber(GetOptimalNodeForSubscriberRequest) returns (GetOptimalNodeForSubscriberResponse) {
+    option (google.api.http) = {
+      get: "/api/cluster/nodes/optimal/subscriber/{stream_path}"
+    };
+  }
+  rpc UpdateStreamState(UpdateStreamStateRequest) returns (UpdateStreamStateResponse) {
+    option (google.api.http) = {
+      put: "/api/cluster/streams/{stream_path}/state"
+      body: "*"
+    };
+  }
+} 
